@@ -36,7 +36,7 @@ public class MenuCliente {
                         automovel.getNome(),
                         automovel.getChassi(),
                         automovel.getPlaca(),
-                        automovel.isCondicao() ? "Sim" : "Não",
+                        automovel.isCondicao() ? "Novo" : "Usado",
                         automovel.getValor()
                 );
             });
