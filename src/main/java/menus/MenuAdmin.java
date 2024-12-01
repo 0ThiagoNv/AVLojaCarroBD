@@ -11,9 +11,9 @@ public class MenuAdmin {
         int opcao;
         do {
             System.out.println("\n=== Menu do Gerente ===");
-            System.out.println("1. Adicionar automóvel");
-            System.out.println("2. Listar automóveis");
-            System.out.println("3. Excluir automóvel");
+            System.out.println("1. Adicionar automovel");
+            System.out.println("2. Listar automoveis");
+            System.out.println("3. Excluir automovel");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
@@ -24,7 +24,7 @@ public class MenuAdmin {
                 case 2 -> listarAutomoveis();
                 case 3 -> excluirAutomovel(scanner);
                 case 0 -> System.out.println("Saindo do menu do gerente...");
-                default -> System.out.println("Opção inválida!");
+                default -> System.out.println("Opção invalida!");
             }
         } while (opcao != 0);
     }
@@ -49,10 +49,10 @@ public class MenuAdmin {
     }
 
     private static void listarAutomoveis() {
-        System.out.println("\n=== Lista de Automóveis ===");
+        System.out.println("\n=== Lista de Automoveis ===");
         var automoveis = AutomovelUtilidades.listarAutomoveis();
         if (automoveis.isEmpty()) {
-            System.out.println("Nenhum automóvel disponível.");
+            System.out.println("Nenhum automovel disponivel.");
         } else {
             automoveis.forEach(automovel -> {
                 System.out.printf(
@@ -69,9 +69,9 @@ public class MenuAdmin {
     }
 
     private static void excluirAutomovel(Scanner scanner) {
-        System.out.println("\n=== Excluir Automóvel ===");
+        System.out.println("\n=== Excluir Automovel ===");
         listarAutomoveis();
-        System.out.print("Digite o ID do automóvel que deseja excluir: ");
+        System.out.print("Digite o ID do automovel que deseja excluir: ");
         int id = scanner.nextInt();
         scanner.nextLine();
 
