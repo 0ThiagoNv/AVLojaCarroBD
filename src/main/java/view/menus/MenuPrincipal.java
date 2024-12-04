@@ -1,9 +1,8 @@
-package menus;
+package view.menus;
 
 import java.util.Scanner;
-import entidades.Cliente;
-import entidades.Admin;
-import utilidades.Autenticador;
+import model.Cliente;
+import model.Admin;
 
 public class MenuPrincipal {
     public static void MenuInicial() {

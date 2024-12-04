@@ -1,4 +1,4 @@
-package entidades;
+package model;
 
 public class Automovel {
     private int id;

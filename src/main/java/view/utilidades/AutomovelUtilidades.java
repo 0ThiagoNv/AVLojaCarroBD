@@ -1,7 +1,7 @@
-package utilidades;
+package view.utilidades;
 
-import connection.DataBase;
-import entidades.Automovel;
+import controller.connection.DataBase;
+import model.Automovel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -1,5 +1,7 @@
-import connection.DataBase;
-import menus.MenuPrincipal;
+package view;
+
+import controller.connection.DataBase;
+import view.menus.MenuPrincipal;
 
 import java.sql.Connection;
 import java.sql.SQLException;

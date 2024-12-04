@@ -1,6 +1,6 @@
-package utilidades;
+package view.utilidades;
 import java.util.Scanner;
-import connection.DataBase;
+import controller.connection.DataBase;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

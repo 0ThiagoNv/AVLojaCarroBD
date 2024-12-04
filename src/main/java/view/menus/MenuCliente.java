@@ -1,6 +1,6 @@
-package menus;
+package view.menus;
 
-import utilidades.AutomovelUtilidades;
+import view.utilidades.AutomovelUtilidades;
 import java.util.Scanner;
 
 public class MenuCliente {

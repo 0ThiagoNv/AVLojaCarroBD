@@ -1,7 +1,7 @@
-package menus;
+package view.menus;
 
-import entidades.Automovel;
-import utilidades.AutomovelUtilidades;
+import model.Automovel;
+import view.utilidades.AutomovelUtilidades;
 
 import java.util.Scanner;
 
