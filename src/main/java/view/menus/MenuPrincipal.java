@@ -1,125 +1,116 @@
 package view.menus;
 
-import java.util.Scanner;
+import controller.UsuarioService;
 import model.Cliente;
 import model.Admin;
+import model.Usuario;
+
+import java.util.Scanner;
 
 public class MenuPrincipal {
+    private static UsuarioService usuarioService = new UsuarioService();
+    private static Scanner scan = new Scanner(System.in);
+
     public static void MenuInicial() {
+        int opcao;
+        do {
+            System.out.println("Bem-vindo à Loja de Carros!");
+            System.out.println("1. Login como Cliente");
+            System.out.println("2. Login como Admin");
+            System.out.println("3. Cadastrar");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opção: ");
+            opcao = scan.nextInt();
+            scan.nextLine();
 
-        Scanner scan = new Scanner(System.in);
+            switch (opcao) {
+                case 1 -> loginComoCliente();
+                case 2 -> loginComoAdmin();
+                case 3 -> cadastrarUsuario();
+                case 0 -> System.out.println("Saindo do sistema...");
+                default -> System.out.println("Opção inválida, digite novamente.");
+            }
+        } while (opcao != 0);
+    }
 
-        System.out.println("Bem-vindo à Loja de Carros!");
-        System.out.println("1. Login como Cliente");
-        System.out.println("2. Login como Admin");
-        System.out.println("3. Cadastrar");
-        System.out.println("0. Sair");
+    private static void loginComoCliente() {
+        System.out.println("Login como Cliente:");
+        System.out.print("Email: ");
+        String email = scan.nextLine();
+        System.out.print("Senha: ");
+        String senha = scan.nextLine();
+
+        if (usuarioService.autenticar(email, senha)) {
+            System.out.println("Login bem-sucedido!");
+            MenuCliente.exibirMenu(scan);
+        } else {
+            System.out.println("Email ou senha inválidos!");
+        }
+    }
+
+    private static void loginComoAdmin() {
+        System.out.println("Login como Admin:");
+        System.out.print("Email: ");
+        String email = scan.nextLine();
+        System.out.print("Senha: ");
+        String senha = scan.nextLine();
+
+        if (usuarioService.autenticar(email, senha)) {
+            System.out.println("Login bem-sucedido!");
+            MenuAdmin.exibirMenu(scan);
+        } else {
+            System.out.println("Email ou senha inválidos!");
+        }
+    }
+
+    private static void cadastrarUsuario() {
+        System.out.println("Cadastrar como: ");
+        System.out.println("1. Cliente");
+        System.out.println("2. Admin");
         System.out.print("Escolha uma opção: ");
-        int opcao = scan.nextInt();
+        int tipoCadastro = scan.nextInt();
         scan.nextLine();
 
-        while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 0) {
-            System.out.println("Opção invalidade, digite novamente: ");
-            opcao = scan.nextInt();
+        switch (tipoCadastro) {
+            case 1 -> cadastrarCliente();
+            case 2 -> cadastrarAdmin();
+            default -> System.out.println("Opção inválida. Tente novamente.");
         }
-        switch (opcao) {
-            case 1: {
-                System.out.println("Login como Cliente:");
-                System.out.print("Email: ");
-                String email = scan.nextLine();
-                System.out.print("Senha: ");
-                String senha = scan.nextLine();
+    }
 
-                boolean encontrado = false;
+    private static void cadastrarCliente() {
+        System.out.println("Cadastro de Cliente:");
+        System.out.print("Nome: ");
+        String nome = scan.nextLine();
+        System.out.print("Email: ");
+        String email = scan.nextLine();
+        System.out.print("Senha: ");
+        String senha = scan.nextLine();
+        System.out.print("Endereço: ");
+        String endereco = scan.nextLine();
+        System.out.print("CPF: ");
+        String cpf = scan.nextLine();
+        System.out.print("Telefone: ");
+        String telefone = scan.nextLine();
 
-                for (Cliente cliente : Cliente.listaClientesCadastrados) {
-                    if (cliente.getEmail().equals(email) && cliente.getSenha().equals(senha)) {
-                        System.out.println("Login bem-sucedido! Bem-vindo, " + cliente.getNome() + "!");
-                        MenuCliente.exibirMenu(scan);
-                        encontrado = true;
-                        break;
-                    }
-                }
-                if (!encontrado) {
-                    System.out.println("Email ou senha inválidos!");
-                }
-                break;
-            }
-            case 2: {
-                System.out.println("Login como Admin:");
-                System.out.print("Email: ");
-                String email = scan.nextLine();
-                System.out.print("Senha: ");
-                String senha = scan.nextLine();
+        Cliente cliente = new Cliente(nome, email, senha, endereco, cpf, telefone);
+        usuarioService.cadastrarUsuario(cliente);
+        System.out.println("Cadastro de cliente realizado com sucesso!");
+    }
 
-                boolean encontrado = false;
+    private static void cadastrarAdmin() {
+        System.out.println("Cadastro de Admin:");
+        System.out.print("Nome: ");
+        String nome = scan.nextLine();
+        System.out.print("Email: ");
+        String email = scan.nextLine();
+        System.out.print("Senha: ");
+        String senha = scan.nextLine();
+        System.out.print("Cargo: ");
+        String cargo = scan.nextLine();
 
-                for (Admin admin : Admin.listaAdminsCadastrados) {
-                    if (admin.getEmail().equals(email) && admin.getSenha().equals(senha)) {
-                        System.out.println("Login bem-sucedido! Bem-vindo, " + admin.getNome() + "!");
-                        MenuAdmin.exibirMenu(scan);
-                        encontrado = true;
-                        break;
-                    }
-                }
-                if (!encontrado) {
-                    System.out.println("Email ou senha inválidos!");
-                }
-                break;
-            }
-            case 3: {
-                System.out.println("Cadastrar como: ");
-                System.out.println("1. Cliente");
-                System.out.println("2. Admin");
-                System.out.print("Escolha uma opção: ");
-                int tipoCadastro = scan.nextInt();
-                scan.nextLine();
-
-                switch (tipoCadastro) {
-                    case 1: {
-                        System.out.println("Cadastro de Cliente:");
-                        System.out.print("Nome: ");
-                        String nome = scan.nextLine();
-                        System.out.print("Email: ");
-                        String email = scan.nextLine();
-                        System.out.print("Senha: ");
-                        String senha = scan.nextLine();
-                        System.out.print("CPF: ");
-                        String cpf = scan.nextLine();
-                        System.out.print("Telefone: ");
-                        String telefone = scan.nextLine();
-                        System.out.print("Endereço: ");
-                        String endereco = scan.nextLine();
-
-                        Cliente cliente = new Cliente(nome, email, senha, cpf, telefone, endereco);
-                        Cliente.listaClientesCadastrados.add(cliente);
-
-                        System.out.println("Cadastro de cliente realizado com sucesso!");
-                        MenuCliente.exibirMenu(scan);
-                    }
-                    case 2: {
-                        System.out.println("Cadastro de Admin:");
-                        System.out.print("Nome: ");
-                        String nome = scan.nextLine();
-                        System.out.print("Email: ");
-                        String email = scan.nextLine();
-                        System.out.print("Senha: ");
-                        String senha = scan.nextLine();
-                        System.out.println("Cargo: ");
-                        String cargo = scan.nextLine();
-
-                        Admin gerente = new Admin(nome, email, senha, cargo);
-                        Admin.listaAdminsCadastrados.add(gerente);
-
-                        System.out.println("Cadastro de administrador realizado com sucesso!");
-                        MenuAdmin.exibirMenu(scan);
-                    }
-                    case 0:
-                        System.out.println("Saindo do sistema...");
-                        System.exit(0);
-                }
-                scan.close();
-            }
-        }
+        Admin admin = new Admin(nome, email, senha, cargo);
+        usuarioService.cadastrarUsuario(admin);
+        System.out.println("Cadastro de administrador realizado com sucesso!");
     }
 }

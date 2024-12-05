@@ -1,6 +1,6 @@
 package view.utilidades;
 
-import controller.connection.DataBase;
+import connection.DataBase;
 import model.Automovel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,8 +17,8 @@ public class AutomovelUtilidades {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, automovel.getNome());
-            stmt.setBoolean(3, automovel.isCondicao());
             stmt.setString(2, automovel.getChassi());
+            stmt.setBoolean(3, automovel.isCondicao());
             stmt.setString(4, automovel.getPlaca());
             stmt.setDouble(5, automovel.getValor());
 
@@ -54,17 +54,19 @@ public class AutomovelUtilidades {
         return automoveis;
     }
 
-    public static void excluirAutomovel(int id) {
+    public static boolean excluirAutomovel(int id) {
         String sql = "DELETE FROM automoveis WHERE id = ?";
+        int linhasAfetadas = 0;
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
-            stmt.executeUpdate();
-            System.out.println("Automóvel excluído com sucesso!");
+            linhasAfetadas = stmt.executeUpdate();
         } catch (Exception e) {
             System.err.println("Erro ao excluir automóvel: " + e.getMessage());
         }
+
+        return linhasAfetadas > 0;
     }
 }

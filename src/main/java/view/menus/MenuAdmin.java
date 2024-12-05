@@ -11,9 +11,9 @@ public class MenuAdmin {
         int opcao;
         do {
             System.out.println("\n=== Menu do Gerente ===");
-            System.out.println("1. Adicionar automovel");
-            System.out.println("2. Listar automoveis");
-            System.out.println("3. Excluir automovel");
+            System.out.println("1. Adicionar automóvel");
+            System.out.println("2. Listar automóveis");
+            System.out.println("3. Excluir automóvel");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
@@ -24,7 +24,7 @@ public class MenuAdmin {
                 case 2 -> listarAutomoveis();
                 case 3 -> excluirAutomovel(scanner);
                 case 0 -> System.out.println("Saindo do menu do gerente...");
-                default -> System.out.println("Opção invalida!");
+                default -> System.out.println("Opção inválida!");
             }
         } while (opcao != 0);
     }
@@ -41,18 +41,32 @@ public class MenuAdmin {
         System.out.print("Placa: ");
         String placa = scanner.nextLine();
         System.out.print("Valor: ");
-        double valor = scanner.nextDouble();
-        scanner.nextLine();
+
+        double valor;
+        while (true) {
+            try {
+                valor = scanner.nextDouble();
+                if (valor < 0) {
+                    System.out.println("O valor deve ser positivo. Tente novamente.");
+                    continue;
+                }
+                break;
+            } catch (Exception e) {
+                System.out.println("Valor inválido. Tente novamente.");
+                scanner.next();
+            }
+        }
 
         Automovel automovel = new Automovel(nome, chassi, placa, condicao, valor);
         AutomovelUtilidades.adicionarAutomovel(automovel);
+        System.out.println("Automóvel adicionado com sucesso!");
     }
 
     private static void listarAutomoveis() {
-        System.out.println("\n=== Lista de Automoveis ===");
+        System.out.println("\n=== Lista de Automóveis ===");
         var automoveis = AutomovelUtilidades.listarAutomoveis();
         if (automoveis.isEmpty()) {
-            System.out.println("Nenhum automovel disponivel.");
+            System.out.println("Nenhum automóvel disponível.");
         } else {
             automoveis.forEach(automovel -> {
                 System.out.printf(
@@ -60,8 +74,8 @@ public class MenuAdmin {
                         automovel.getId(),
                         automovel.getNome(),
                         automovel.getChassi(),
-                        automovel.getPlaca(),
                         automovel.isCondicao() ? "Novo" : "Usado",
+                        automovel.getPlaca(),
                         automovel.getValor()
                 );
             });
@@ -69,12 +83,16 @@ public class MenuAdmin {
     }
 
     private static void excluirAutomovel(Scanner scanner) {
-        System.out.println("\n=== Excluir Automovel ===");
+        System.out.println("\n=== Excluir Automóvel ===");
         listarAutomoveis();
-        System.out.print("Digite o ID do automovel que deseja excluir: ");
+        System.out.print("Digite o ID do automóvel que deseja excluir: ");
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        AutomovelUtilidades.excluirAutomovel(id);
+        if (AutomovelUtilidades.excluirAutomovel(id)) {
+            System.out.println("Automóvel excluído com sucesso!");
+        } else {
+            System.out.println("ID inválido. Nenhum automóvel foi excluído.");
+        }
     }
 }

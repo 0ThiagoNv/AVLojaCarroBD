@@ -6,27 +6,28 @@ import java.util.Scanner;
 public class MenuCliente {
 
     public static void exibirMenu(Scanner scan) {
-        int opcao = scan.nextInt();
+        int opcao;
 
-        while(opcao != 1 && opcao != 0){
-            System.out.println("Opção invalidade, digite novamente: ");
-            opcao = scan.nextInt();
-        }
+        do {
             System.out.println("\n=== Menu do Cliente ===");
-            System.out.println("1. Listar os automoveis disponiveis");
+            System.out.println("1. Listar os automóveis disponíveis");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scan.nextInt();
-            scan.nextLine();
+            scan.nextLine(); // Limpar o buffer do scanner
 
             switch (opcao) {
-                case 1 -> listarAutomoveis();
-                case 0 -> {
+                case 1:
+                    listarAutomoveis();
+                    break;
+                case 0:
                     System.out.println("Saindo do menu do cliente...");
-                    MenuPrincipal.MenuInicial();
-                }
+                    break;
+                default:
+                    System.out.println("Opção inválida, digite novamente.");
             }
-        }
+        } while (opcao != 0);
+    }
 
     private static void listarAutomoveis() {
         System.out.println("\n=== Lista de Automóveis ===");
@@ -40,14 +41,11 @@ public class MenuCliente {
                         automovel.getId(),
                         automovel.getNome(),
                         automovel.getChassi(),
-                        automovel.getPlaca(),
                         automovel.isCondicao() ? "Novo" : "Usado",
+                        automovel.getPlaca(),
                         automovel.getValor()
                 );
             });
         }
-    }
-
-    public static void exibirMenu() {
     }
 }
