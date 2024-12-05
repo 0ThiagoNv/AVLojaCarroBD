@@ -14,7 +14,7 @@ public class MenuCliente {
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             opcao = scan.nextInt();
-            scan.nextLine(); // Limpar o buffer do scanner
+            scan.nextLine();
 
             switch (opcao) {
                 case 1:
@@ -41,7 +41,7 @@ public class MenuCliente {
                         automovel.getId(),
                         automovel.getNome(),
                         automovel.getChassi(),
-                        automovel.isCondicao() ? "Novo" : "Usado",
+                        automovel.getCondicao(),
                         automovel.getPlaca(),
                         automovel.getValor()
                 );

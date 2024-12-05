@@ -9,12 +9,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Types;
 
 public class UsuarioDAO {
 
     public boolean autenticar(String email, String senha) {
-        String sql = "SELECT senha FROM usuarios WHERE email = ?";
+        String sql = "SELECT senha FROM usuario WHERE email = ?";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -31,32 +30,57 @@ public class UsuarioDAO {
         }
         return false;
     }
-    public void cadastrarUsuario(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nome, email, senha, tipo, cargo, endereco, cpf, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+    private boolean emailJaCadastrado(String email) {
+        String sql = "SELECT COUNT(*) FROM usuario WHERE email = ?";
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void cadastrarUsuario(Usuario usuario) {
+
+        if (emailJaCadastrado(usuario.getEmail())) {
+            throw new IllegalArgumentException("Email já cadastrado: " + usuario.getEmail());
+        }
+
+        if (usuario.getNome().length() > 100) {
+            throw new IllegalArgumentException("Nome muito longo. Máximo de 100 caracteres.");
+        }
+        if (usuario.getEmail().length() > 100) {
+            throw new IllegalArgumentException("Email muito longo. Máximo de 100 caracteres.");
+        }
+        if (usuario.getSenha().length() > 100) {
+            throw new IllegalArgumentException("Senha muito longa. Máximo de 100 caracteres.");
+        }
+        String sql = "INSERT INTO usuario (nome, email, senha, tipo_usuario) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = DataBase.getInstance().connection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             pstmt.setString(1, usuario.getNome());
             pstmt.setString(2, usuario.getEmail());
-            pstmt.setString(3, BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt()));
+            pstmt.setString(3, usuario.getSenha());
             pstmt.setString(4, usuario.getTipo());
 
-            if (usuario instanceof Admin) {
-                pstmt.setString(5, ((Admin) usuario).getCargo());
-                pstmt.setNull(6, Types.VARCHAR);
-                pstmt.setNull(7, Types.VARCHAR);
-                pstmt.setNull(8, Types.VARCHAR);
-            }
-
-            else if (usuario instanceof Cliente) {
-                pstmt.setNull(5, Types.VARCHAR);
-                pstmt.setString(6, ((Cliente) usuario).getEndereco());
-                pstmt.setString(7, ((Cliente) usuario).getCpf());
-                pstmt.setString(8, ((Cliente) usuario).getTelefone());
-            }
-
             pstmt.executeUpdate();
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    usuario.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Falha ao recuperar o ID do usuário.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,7 +88,7 @@ public class UsuarioDAO {
 
     public List<Usuario> listarUsuarios(int idUsuarioLogado) {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        String sql = "SELECT * FROM usuario WHERE id = ?";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -73,19 +97,13 @@ public class UsuarioDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String tipo = rs.getString("tipo");
                 Usuario usuario;
 
-                if ("admin".equals(tipo)) {
-                    String cargo = rs.getString("cargo");
-                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), cargo);
+                if ("admin".equals(rs.getString("tipo_usuario"))) {
+                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 } else {
-                    String endereco = rs.getString("endereco");
-                    String cpf = rs.getString("cpf");
-                    String telefone = rs.getString("telefone");
-                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), endereco, cpf, telefone);
+                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 }
-
                 usuario.setId(rs.getInt("id"));
                 usuarios.add(usuario);
             }
@@ -100,32 +118,16 @@ public class UsuarioDAO {
             throw new SecurityException("Usuário não autorizado a atualizar este registro.");
         }
 
-        String sql = "UPDATE usuarios SET nome = ?, email = ?, senha = ?, tipo = ?, cargo = ?, endereco = ?, cpf = ?, telefone = ? WHERE id = ?";
+        String sql = "UPDATE usuario SET nome = ?, email = ?, senha = ? WHERE id = ?";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, usuario.getNome());
             pstmt.setString(2, usuario.getEmail());
-            pstmt.setString(3, BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt()));
-            pstmt.setString(4, usuario.getTipo());
+            pstmt.setString(3, usuario.getSenha());
+            pstmt.setInt(4, usuario.getId());
 
-
-            if (usuario instanceof Admin) {
-                pstmt.setString(5, ((Admin) usuario).getCargo());
-                pstmt.setNull(6, Types.VARCHAR);
-                pstmt.setNull(7, Types.VARCHAR);
-                pstmt.setNull(8, Types.VARCHAR);
-            }
-
-            else if (usuario instanceof Cliente) {
-                pstmt.setNull(5, Types.VARCHAR);
-                pstmt.setString(6, ((Cliente) usuario).getEndereco());
-                pstmt.setString(7, ((Cliente) usuario).getCpf());
-                pstmt.setString(8, ((Cliente) usuario).getTelefone());
-            }
-
-            pstmt.setInt(9, usuario.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -137,7 +139,7 @@ public class UsuarioDAO {
             throw new SecurityException("Usuário não autorizado a deletar este registro.");
         }
 
-        String sql = "DELETE FROM usuarios WHERE id = ?";
+        String sql = "DELETE FROM usuario WHERE id = ?";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -149,41 +151,9 @@ public class UsuarioDAO {
         }
     }
 
-    public List<Usuario> listarUsuariosComPapel() {
-        List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT u.*, r.nome AS papel FROM usuarios u INNER JOIN roles r ON u.tipo = r.id ORDER BY u.nome";
-
-        try (Connection conn = DataBase.getInstance().connection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                String tipo = rs.getString("tipo");
-                Usuario usuario;
-
-                if ("admin".equals(tipo)) {
-                    String cargo = rs.getString("cargo");
-                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), cargo);
-                } else {
-                    String endereco = rs.getString("endereco");
-                    String cpf = rs.getString("cpf");
-                    String telefone = rs.getString("telefone");
-                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), endereco, cpf, telefone);
-                }
-
-                usuario.setId(rs.getInt("id"));
-                String papel = rs.getString("papel");
-                usuarios.add(usuario);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return usuarios;
-    }
-
     public List<Usuario> buscarUsuariosPorNome(String nome) {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT * FROM usuarios WHERE nome LIKE ? ORDER BY nome";
+        String sql = "SELECT * FROM usuario WHERE nome LIKE ? ORDER BY nome";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -192,19 +162,13 @@ public class UsuarioDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String tipo = rs.getString("tipo");
                 Usuario usuario;
 
-                if ("admin".equals(tipo)) {
-                    String cargo = rs.getString("cargo");
-                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), cargo);
+                if ("admin".equals(rs.getString("tipo_usuario"))) {
+                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 } else {
-                    String endereco = rs.getString("endereco");
-                    String cpf = rs.getString("cpf");
-                    String telefone = rs.getString("telefone");
-                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), endereco, cpf, telefone);
+                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 }
-
                 usuario.setId(rs.getInt("id"));
                 usuarios.add(usuario);
             }
@@ -216,26 +180,20 @@ public class UsuarioDAO {
 
     public List<Usuario> listarUsuariosOrdenadosPorEmail() {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT * FROM usuarios ORDER BY email";
+        String sql = "SELECT * FROM usuario ORDER BY email";
 
         try (Connection conn = DataBase.getInstance().connection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                String tipo = rs.getString("tipo");
                 Usuario usuario;
 
-                if ("admin".equals(tipo)) {
-                    String cargo = rs.getString("cargo");
-                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), cargo);
+                if ("admin".equals(rs.getString("tipo_usuario"))) {
+                    usuario = new Admin(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 } else {
-                    String endereco = rs.getString("endereco");
-                    String cpf = rs.getString("cpf");
-                    String telefone = rs.getString("telefone");
-                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"), endereco, cpf, telefone);
+                    usuario = new Cliente(rs.getString("nome"), rs.getString("email"), rs.getString("senha"));
                 }
-
                 usuario.setId(rs.getInt("id"));
                 usuarios.add(usuario);
             }

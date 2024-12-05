@@ -3,7 +3,6 @@ package view.menus;
 import controller.UsuarioService;
 import model.Cliente;
 import model.Admin;
-import model.Usuario;
 
 import java.util.Scanner;
 
@@ -86,15 +85,8 @@ public class MenuPrincipal {
         String email = scan.nextLine();
         System.out.print("Senha: ");
         String senha = scan.nextLine();
-        System.out.print("Endereço: ");
-        String endereco = scan.nextLine();
-        System.out.print("CPF: ");
-        String cpf = scan.nextLine();
-        System.out.print("Telefone: ");
-        String telefone = scan.nextLine();
 
-        Cliente cliente = new Cliente(nome, email, senha, endereco, cpf, telefone);
-        usuarioService.cadastrarUsuario(cliente);
+        usuarioService.cadastrarCliente(nome, email, senha);
         System.out.println("Cadastro de cliente realizado com sucesso!");
     }
 
@@ -106,11 +98,8 @@ public class MenuPrincipal {
         String email = scan.nextLine();
         System.out.print("Senha: ");
         String senha = scan.nextLine();
-        System.out.print("Cargo: ");
-        String cargo = scan.nextLine();
 
-        Admin admin = new Admin(nome, email, senha, cargo);
-        usuarioService.cadastrarUsuario(admin);
+        usuarioService.cadastrarAdmin(nome, email, senha);
         System.out.println("Cadastro de administrador realizado com sucesso!");
     }
 }

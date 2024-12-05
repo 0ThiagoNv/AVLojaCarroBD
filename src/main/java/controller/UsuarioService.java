@@ -18,8 +18,14 @@ public class UsuarioService {
         return usuarioDAO.autenticar(email, senha);
     }
 
-    public void cadastrarUsuario(Usuario usuario) {
-        usuarioDAO.cadastrarUsuario(usuario);
+    public void cadastrarCliente(String nome, String email, String senha) {
+        Usuario cliente = new Cliente(nome, email, senha);
+        usuarioDAO.cadastrarUsuario(cliente);
+    }
+
+    public void cadastrarAdmin(String nome, String email, String senha) {
+        Usuario admin = new Admin(nome, email, senha);
+        usuarioDAO.cadastrarUsuario(admin);
     }
 
     public List<Usuario> listarUsuarios(int idUsuarioLogado) {
@@ -36,10 +42,6 @@ public class UsuarioService {
 
     public List<Usuario> buscarUsuariosPorNome(String nome) {
         return usuarioDAO.buscarUsuariosPorNome(nome);
-    }
-
-    public List<Usuario> listarTodosUsuarios() {
-        return usuarioDAO.listarUsuariosComPapel();
     }
 
     public List<Usuario> listarUsuariosOrdenadosPorEmail() {

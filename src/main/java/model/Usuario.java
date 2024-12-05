@@ -7,21 +7,13 @@ public abstract class Usuario {
     private String nome;
     private String email;
     private String senha;
-    private String tipo;
+    private String tipo_usuario;
 
     public Usuario(String nome, String email, String senha, String tipo) {
         this.nome = nome;
         this.email = email;
         this.setSenha(senha);
-        this.tipo = tipo;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+        this.tipo_usuario = tipo;
     }
 
     public int getId() {
@@ -30,6 +22,14 @@ public abstract class Usuario {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTipo() {
+        return tipo_usuario;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo_usuario = tipo;
     }
 
     public String getNome() {

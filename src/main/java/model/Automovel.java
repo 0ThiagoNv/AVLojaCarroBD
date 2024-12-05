@@ -5,10 +5,10 @@ public class Automovel {
     private String nome;
     private String chassi;
     private String placa;
-    private boolean condicao;
+    private String condicao;
     private double valor;
 
-    public Automovel(String nome, String chassi, String placa, boolean condicao, double valor){
+    public Automovel(String nome, String chassi, String placa, String condicao, double valor){
         this.nome = nome;
         this.chassi = chassi;
         this.placa = placa;
@@ -49,11 +49,11 @@ public class Automovel {
         this.placa = placa;
     }
 
-    public boolean isCondicao() {
+    public String getCondicao() {
         return condicao;
     }
 
-    public void setCondicao(boolean novo) {
+    public void setCondicao(String novo) {
         this.condicao = novo;
     }
 

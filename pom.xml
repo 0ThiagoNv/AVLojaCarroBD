@@ -22,12 +22,20 @@
     </repositories>
 
     <dependencies>
+        <!-- Driver do PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version> <!-- Verifique regularmente por atualizações -->
+        </dependency>
+
+        <!-- Biblioteca BCrypt para criptografia de senhas -->
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version> <!-- Ou outra versão mais recente -->
         </dependency>
-        <!-- Se você não precisar da outra, pode remover -->
+        <!-- Opcional: Se você usa o bcrypt de outra biblioteca -->
         <!--
         <dependency>
             <groupId>at.favre.lib</groupId>

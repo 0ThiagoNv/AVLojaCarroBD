@@ -36,7 +36,7 @@ public class MenuAdmin {
         System.out.print("Chassi: ");
         String chassi = scanner.nextLine();
         System.out.print("É novo? (true/false): ");
-        boolean condicao = scanner.nextBoolean();
+        String condicao = scanner.nextLine();
         scanner.nextLine();
         System.out.print("Placa: ");
         String placa = scanner.nextLine();
@@ -70,11 +70,11 @@ public class MenuAdmin {
         } else {
             automoveis.forEach(automovel -> {
                 System.out.printf(
-                        "ID: %d | Nome: %s | Chassi: %s | Novo: %s | Placa: %s | Valor: R$ %.2f%n",
+                        "ID: %d | Nome: %s | Chassi: %s | Condicao: %s | Placa: %s | Valor: R$ %.2f%n",
                         automovel.getId(),
                         automovel.getNome(),
                         automovel.getChassi(),
-                        automovel.isCondicao() ? "Novo" : "Usado",
+                        automovel.getCondicao(),
                         automovel.getPlaca(),
                         automovel.getValor()
                 );
